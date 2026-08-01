@@ -97,7 +97,7 @@ Any and all donations are appreciated!
 
 Without the following acknowledgements & support, it would not have happened:
 
-- **[maxsteeel/nomount](https://github.com/maxsteeel/nomount)** — NoMount development 🙌
+- **[maxsteeel/nomount](https://github.com/maxsteeel/nomount)** & all the contributors — NoMount development 🙌
 - ReSukiSU
 - AnyKernel3 by osm0sis and contributors
 - **[WildKernels/OnePlus_KernelSU_SUSFS](https://github.com/WildKernels/OnePlus_KernelSU_SUSFS)** — Excellent OnePlus build framework this is forked from
