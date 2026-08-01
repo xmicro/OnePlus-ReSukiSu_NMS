@@ -712,7 +712,7 @@ jobs:
       REPO_NAME: ${{ github.event.repository.name }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       NOMOUNT_VERSION: ${{ needs.set-op-model.outputs.nomount_version }}
-      RELEASE_NAME: '*TEST BUILD* OnePlus Kernels With ReSukiSU & NoMount ${{ needs.set-op-model.outputs.nomount_version }} *TEST BUILD*'
+      RELEASE_NAME: 'ReSukiSU 📦 NoMount (v${{ needs.set-op-model.outputs.nomount_version }})'
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v6
@@ -898,7 +898,7 @@ jobs:
           
           
           cat << EOF > release_notes.md
-          # 🎯 OnePlus Kernels with ReSukiSU & NoMount $NOMOUNT_VERSION
+          # ReSukiSU 📦 NoMount (v$NOMOUNT_VERSION)
           
           > **Build Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')  
           > **Build ID:** \`${{ github.run_id }}\`  
@@ -1031,9 +1031,6 @@ jobs:
           | **Clean Build** | $( [ "$CLEAN_BUILD" = "true" ] && echo "✅ Yes (no ccache)" || echo "❌ No (ccache enabled)" ) |
           | **Compiler** | Clang (version varies by device) |
           
-          ### 📌 NoMount Source
-          
-          | Component | Source |
           |-----------|--------|
           | NoMount (hookless) | [\`Bouteillepleine/kbuild@hookless\`](https://github.com/Bouteillepleine/kbuild/tree/hookless) |
           
@@ -1077,10 +1074,6 @@ jobs:
             → [GitHub Release](https://github.com/ReSukiSU/ReSukiSU/releases)
           EOF
           cat << EOF >> release_notes.md
-          ### Community Managers
-          - **WildKSU Manager** (Recommended for additional features)  
-            → [GitHub Release](https://github.com/WildKernels/Wild_KSU/releases)
-          
           ### Recomended Flasher
           - **Kernel Flasher** (Required for flashing AnyKernel3 zips and backups and OTA)  
             → [GitHub Release](https://github.com/fatalcoder524/KernelFlasher/releases)
@@ -1096,16 +1089,11 @@ jobs:
           
           ### Via Kernel Flasher
           1. Download the correct AnyKernel3 ZIP for your device.
-          2. If you previously used another root method, clean it up first:
-              a. **Magisk**: perform a complete uninstall **after flashing the AnyKernel3 ZIP**.
-              b. **KSU LKM (boot/init_boot/vendor_boot patched)**: Flash back the stock boot/init_boot/vendor_boot depending on what you patched.
-              c. **KSU GKI**: if you are 100% sure you already flashed stock init_boot/boot/vendor_boot, no action is needed; otherwise, follow the same steps as KSU LKM.
-              d. **APatch**: remove /data/adb contents to avoid leftover root conflicts **after flashing the AnyKernel3 ZIP**.
-          3. Flash the ZIP to the active slot using Kernel Flasher.
-          4. Install the ReSukiSU Manager APK, same version as mentioned in the AnyKernel3 ZIP name.
-          5. Open the ReSukiSU app.
-          6. In **ReSukiSU Manager**, install the **NoMount Suite** module (Modules → Install from storage → the NoMount Suite ZIP from this release). Remove any existing metamodule and reboot first if you have one.
-          7. Reboot the device.
+          2. Flash the ZIP to the active slot using Kernel Flasher.
+          3. Install the ReSukiSU Manager APK, same version as mentioned in the AnyKernel3 ZIP name.
+          4. Open the ReSukiSU app.
+          5. In **ReSukiSU Manager**, install the **NoMount Suite** module (Modules → Install from storage → the NoMount Suite ZIP from this release). Remove any existing metamodule and reboot first if you have one.
+          6. Reboot the device.
 
           > **NoMount is built into the kernel** and driven by the **NoMount Suite** metamodule (included in this release). Flash the kernel ZIP, flash NoMount Suite, then reboot — hiding is served **mountlessly**, with no overlay mounts.
 
@@ -1119,11 +1107,7 @@ jobs:
           
           ## 🙏 Credits
           
-          **ReSukiSU Team**, **NoMount** (maxsteeel), **WildKernels**, **OnePlus** (kernel source), and community testers.
-          
-          ---
-          
-          **⚡ Built with ❤️ by the community**
+          **ReSukiSU Team**, **NoMount** (maxsteeel & Contributors), **WildKernels**, **OnePlus** (kernel source), and community testers.
           
           EOF
           
