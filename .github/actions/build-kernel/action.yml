@@ -836,9 +836,6 @@ runs:
         }
         
         retry_clone "https://github.com/WildKernels/kernel_patches.git" "main" "1"
-
-        # Bouteillepleine kernel_patches is used for BBRv3 for all Android/kernel versions.
-        # It is also used for ADIOS patches when enable_adios=true.
         retry_clone "https://github.com/Bouteillepleine/kernel_patches.git" "main" "1" "bouton_kernel_patches"
 
         echo "BOUTEILLE_KERNEL_PATCHES_FOLDER=$GITHUB_WORKSPACE/bouton_kernel_patches" >> "$GITHUB_ENV"
@@ -960,7 +957,6 @@ runs:
         echo "✅ ReSukiSU added (commit: ${KSU_COMMIT_SHA:0:8})"
         echo "::endgroup::"
 
-
     - name: Apply NoMount (hookless) Patch
       if: ${{ env.OP_NMS == 'true' }}
       shell: bash
@@ -1060,11 +1056,7 @@ runs:
           esac
           FENGCHI_PATCH="$FENGCHI_DIR/fengchi_${HMBIRD_MODEL}_${OP_OS_VERSION}.patch"
           dos2unix "$FENGCHI_PATCH"
-          # The fengchi hunk that deletes OnePlus's CONFIG_SLIM_SCHED KABI block from task_struct
-          # (sched.h hunk #3) rejects on many trees — the block is absent, or present with divergent
-          # context (OP13/OP13T, 6.6.30, N30-SE). It is pure cleanup: HMBIRD (hunk #4) uses
-          # android_oem_data1 not KABI slots 1/2, and no fengchi hunk *adds* to slots 1/2 — so always
-          # drop that one hunk and leave SLIM_SCHED (stock) in place. Ref: Numbersf/SCHED_PATCH ca7c5c0.
+
           FENGCHI_PATCH_FIXED="$(mktemp)"
           awk '
             function flush(){ if (buf != "" && buf !~ /ANDROID_KABI_USE\(1, unsigned long sched_prop\)/) printf "%s", buf; buf="" }
