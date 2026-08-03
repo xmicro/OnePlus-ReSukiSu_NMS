@@ -91,10 +91,6 @@ jobs:
     steps:
       - name: 📥 Checkout Code (to access configs/)
         uses: actions/checkout@v6
-        with:
-          sparse-checkout: |
-            configs/
-          sparse-checkout-cone-mode: false
 
       - name: 🔍 Generate build matrix
         id: set-matrix
