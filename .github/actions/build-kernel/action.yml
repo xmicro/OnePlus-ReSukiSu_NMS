@@ -1038,20 +1038,33 @@ runs:
         HOOK="$BOUTEILLE_KERNEL_PATCHES_FOLDER/common/_hook"
         KV="${KERNEL_VER}"
         dos2unix "$HOOK"/*.patch 2>/dev/null || true
+        # Fail-closed apply: apply if it applies, tolerate if already applied, but FAIL
+        # the build if a patch neither applies nor is already present — so we never ship a
+        # green-but-uncloaked kernel (the entire purpose of these builders).
+        apply_or_die() {
+          local p="$1"
+          if patch -p1 --forward --dry-run < "$p" >/dev/null 2>&1; then
+            patch -p1 --forward < "$p"
+          elif patch -p1 --reverse --dry-run < "$p" >/dev/null 2>&1; then
+            echo "already applied: $(basename "$p")"
+          else
+            echo "::error::oracle patch neither applied nor already present: $(basename "$p")"; exit 1
+          fi
+        }
         cd "$COMMON_KERNEL_FOLDER"
-        patch -p1 --forward < "$HOOK/hide_selinux_selinuxfs.patch" || echo "::warning::selinuxfs oracle patch did not apply"
+        apply_or_die "$HOOK/hide_selinux_selinuxfs.patch"
         if [ "$KV" = "6.12" ]; then
-          patch -p1 --forward < "$HOOK/hide_selinux_attr_6_12.patch" || echo "::warning::attr(6.12) oracle patch did not apply"
+          apply_or_die "$HOOK/hide_selinux_attr_6_12.patch"
         else
-          patch -p1 --forward < "$HOOK/hide_selinux_attr.patch" || echo "::warning::attr oracle patch did not apply"
+          apply_or_die "$HOOK/hide_selinux_attr.patch"
         fi
         case "$KV" in
-          6.6|6.12) patch -p1 --forward < "$HOOK/quiet_selinux_audit.patch" || echo "::warning::audit oracle patch did not apply" ;;
-          *)        patch -p1 --forward < "$HOOK/quiet_selinux_audit_legacy.patch" || echo "::warning::audit(legacy) oracle patch did not apply" ;;
+          6.6|6.12) apply_or_die "$HOOK/quiet_selinux_audit.patch" ;;
+          *)        apply_or_die "$HOOK/quiet_selinux_audit_legacy.patch" ;;
         esac
-        patch -p1 --forward < "$HOOK/quiet_selinux_audit_user.patch" || echo "::warning::audit(user) oracle patch did not apply"
+        apply_or_die "$HOOK/quiet_selinux_audit_user.patch"
         cd "$KSU_FOLDER"
-        patch -p1 --forward < "$HOOK/fix_selinux_seqno.patch" || echo "::warning::seqno patch did not apply"
+        apply_or_die "$HOOK/fix_selinux_seqno.patch"
         echo "SELinux oracle patches applied"
         echo "::endgroup::"
 
@@ -1067,11 +1080,18 @@ runs:
         cp -f "$PH/pathhide.h" fs/pathhide.h
         dos2unix fs/pathhide.c fs/pathhide.h 2>/dev/null || true
         dos2unix "$PH"/*.patch 2>/dev/null || true
-        if [ -f "$PH/pathhide_${KV}_integration.patch" ]; then
-          patch -p1 --forward < "$PH/pathhide_${KV}_integration.patch" || echo "::warning::pathhide integration patch did not apply for ${KV}"
-        else
-          echo "::warning::no pathhide integration patch for KERNEL_VER=${KV}"
+        if [ ! -f "$PH/pathhide_${KV}_integration.patch" ]; then
+          echo "::error::no pathhide integration patch for KERNEL_VER=${KV}"; exit 1
         fi
+        if patch -p1 --forward --dry-run < "$PH/pathhide_${KV}_integration.patch" >/dev/null 2>&1; then
+          patch -p1 --forward < "$PH/pathhide_${KV}_integration.patch"
+        elif patch -p1 --reverse --dry-run < "$PH/pathhide_${KV}_integration.patch" >/dev/null 2>&1; then
+          echo "already applied: pathhide_${KV}_integration.patch"
+        else
+          echo "::error::pathhide integration patch neither applied nor already present for ${KV}"; exit 1
+        fi
+        # marker check: pathhide.o must be wired into the fs build or the cloak is dead code
+        grep -q 'pathhide' fs/Makefile || { echo "::error::pathhide.o not wired into fs/Makefile"; exit 1; }
         echo "pathhide applied"
         echo "::endgroup::"
 

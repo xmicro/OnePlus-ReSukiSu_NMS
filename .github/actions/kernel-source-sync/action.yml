@@ -221,7 +221,7 @@ runs:
                     if attempt < MAX_ATTEMPTS:
                         time.sleep(5)
                 except Exception as e:
-                    print(f"  [RETRY {attempt}/{MAX_ATTEMPTS}] {name} failed with exit code {e.returncode}. Command: {e.cmd}")
+                    print(f"  [RETRY {attempt}/{MAX_ATTEMPTS}] {name} failed: {e}")
                     print(f"  [ERROR] Failed to sync {name}")
                     if attempt < MAX_ATTEMPTS:
                         time.sleep(5)

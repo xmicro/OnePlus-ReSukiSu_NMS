@@ -103,7 +103,3 @@ Without the following acknowledgements & support, it would not have happened:
 - **[WildKernels/OnePlus_KernelSU_SUSFS](https://github.com/WildKernels/OnePlus_KernelSU_SUSFS)** — Excellent OnePlus build framework this is forked from
 - OnePlusOSS
 - Community testers and contributors
-
-## License
-
-This project is licensed under the GNU General Public License v2.0 (GPL-2.0). See the [LICENSE](LICENSE) file for details.
